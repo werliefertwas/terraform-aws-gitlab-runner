@@ -4,6 +4,7 @@ locals {
   specified_cidr_blocks       = "${concat(local.callers_ip, var.specified_cidr_blocks)}"
   cidr_blocks_allowed_inbound = "${split(",", var.allow_all_inbound ? join(",", local.any_any_cidr_block) : join(",", local.specified_cidr_blocks))}"
 }
+
 resource "aws_security_group" "runner" {
   name_prefix = "${var.environment}-security-group"
   vpc_id      = "${var.vpc_id}"
@@ -12,7 +13,8 @@ resource "aws_security_group" "runner" {
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
-    cidr_blocks = ["${local.cidr_blocks_allowed_inbound}"]
+    # cidr_blocks = ["${local.cidr_blocks_allowed_inbound}"]
+    security_groups = ["${var.allow_ssh_to_runner_instance_sg}"]
   }
 
   egress {
@@ -87,11 +89,31 @@ data "template_file" "gitlab_runner" {
   template = "${file("${path.module}/template/gitlab-runner.tpl")}"
 
   vars {
+<<<<<<< HEAD
     gitlab_runner_version                   = "${var.gitlab_runner_version}"
     docker_machine_version                  = "${var.docker_machine_version}"
     runners_config                          = "${data.template_file.runners.rendered}"
     runners_executor                        = "${var.runners_executor}"
     pre_install                             = "${var.userdata_pre_install}"
+=======
+    gitlab_runner_version = "${var.gitlab_runner_version}"
+
+    gitlab_runner_version  = "${var.gitlab_runner_version}"
+    docker_machine_version = "${var.docker_machine_version}"
+
+    docker_machine_version = "${var.docker_machine_version}"
+    runners_config         = "${data.template_file.runners.rendered}"
+
+    runners_config   = "${data.template_file.runners.rendered}"
+    runners_executor = "${var.runners_executor}"
+
+    runners_executor = "${var.runners_executor}"
+    pre_install      = "${var.userdata_pre_install}"
+
+    pre_install  = "${var.userdata_pre_install}"
+    post_install = "${var.userdata_post_install}"
+
+>>>>>>> db72e3e... Adds existing efforts to auto register a runner
     post_install                            = "${var.userdata_post_install}"
     runners_gitlab_url                      = "${var.runners_gitlab_url}"
     runners_token                           = "${var.runners_token}"
@@ -136,7 +158,7 @@ data "template_file" "runners" {
     runners_limit                     = "${var.runners_limit}"
     runners_concurrent                = "${var.runners_concurrent}"
     runners_image                     = "${var.runners_image}"
-    runners_privilled                 = "${var.runners_privilled}"
+    runners_privileged                 = "${var.runners_privileged}"
     runners_idle_count                = "${var.runners_idle_count}"
     runners_idle_time                 = "${var.runners_idle_time}"
     runners_off_peak_timezone         = "${var.runners_off_peak_timezone}"
@@ -154,6 +176,26 @@ data "template_file" "runners" {
     bucket_name                       = "${aws_s3_bucket.build_cache.bucket}"
     shared_cache                      = "${var.cache_shared}"
   }
+}
+
+################################################################################
+### AWS Systems Manager access to store runner token once regsitered
+################################################################################
+data "template_file" "ssm_policy" {
+  template = "${file("${path.module}/policies/instance-secure-parameter-role-policy.json")}"
+}
+
+resource "aws_iam_policy" "ssm" {
+  name        = "${var.environment}-ssm"
+  path        = "/"
+  description = "Policy for runner token param access via SSM"
+
+  policy = "${data.template_file.ssm_policy.rendered}"
+}
+
+resource "aws_iam_role_policy_attachment" "ssm" {
+  role       = "${aws_iam_role.instance.name}"
+  policy_arn = "${aws_iam_policy.ssm.arn}"
 }
 
 resource "aws_autoscaling_group" "gitlab_runner_instance" {

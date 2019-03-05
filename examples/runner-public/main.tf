@@ -30,6 +30,7 @@ module "runner" {
 
   runners_name       = "${var.runner_name}"
   runners_gitlab_url = "${var.gitlab_url}"
+<<<<<<< HEAD
 
   gitlab_runner_registration_config = {
     registration_token = "<ADD YOUR REGISTRATION TOKEN HERE>"
@@ -39,4 +40,9 @@ module "runner" {
     run_untagged       = "false"
     maximum_timeout    = "3600"
   }
+=======
+  runners_token      = "${var.runner_token}"
+
+  gitlab_runner_registration_config = "${local.runner_registration_config}"
+>>>>>>> db72e3e... Adds existing efforts to auto register a runner
 }

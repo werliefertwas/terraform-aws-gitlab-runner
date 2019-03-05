@@ -16,4 +16,8 @@
             "Resource": "arn:aws:ssm:*"
         }
     ]
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> db72e3e... Adds existing efforts to auto register a runner
