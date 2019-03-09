@@ -1,3 +1,7 @@
+################################################################################
+### Security Groups
+################################################################################
+
 locals {
   callers_ip                  = ["${chomp(data.http.ip.body)}/32"]
   any_any_cidr_block          = ["0.0.0.0/0"]
@@ -10,10 +14,10 @@ resource "aws_security_group" "runner" {
   vpc_id      = "${var.vpc_id}"
 
   ingress {
-    from_port   = 22
-    to_port     = 22
-    protocol    = "tcp"
-    # cidr_blocks = ["${local.cidr_blocks_allowed_inbound}"]
+    from_port       = 22
+    to_port         = 22
+    protocol        = "tcp"
+    cidr_blocks     = ["${local.cidr_blocks_allowed_inbound}"]
     security_groups = ["${var.allow_ssh_to_runner_instance_sg}"]
   }
 
@@ -68,6 +72,10 @@ resource "aws_security_group_rule" "out_all" {
   security_group_id = "${aws_security_group.docker_machine.id}"
 }
 
+################################################################################
+### Template Handling
+################################################################################
+
 data "template_file" "user_data" {
   template = "${file("${path.module}/template/user-data.tpl")}"
 
@@ -89,31 +97,11 @@ data "template_file" "gitlab_runner" {
   template = "${file("${path.module}/template/gitlab-runner.tpl")}"
 
   vars {
-<<<<<<< HEAD
     gitlab_runner_version                   = "${var.gitlab_runner_version}"
     docker_machine_version                  = "${var.docker_machine_version}"
     runners_config                          = "${data.template_file.runners.rendered}"
     runners_executor                        = "${var.runners_executor}"
     pre_install                             = "${var.userdata_pre_install}"
-=======
-    gitlab_runner_version = "${var.gitlab_runner_version}"
-
-    gitlab_runner_version  = "${var.gitlab_runner_version}"
-    docker_machine_version = "${var.docker_machine_version}"
-
-    docker_machine_version = "${var.docker_machine_version}"
-    runners_config         = "${data.template_file.runners.rendered}"
-
-    runners_config   = "${data.template_file.runners.rendered}"
-    runners_executor = "${var.runners_executor}"
-
-    runners_executor = "${var.runners_executor}"
-    pre_install      = "${var.userdata_pre_install}"
-
-    pre_install  = "${var.userdata_pre_install}"
-    post_install = "${var.userdata_post_install}"
-
->>>>>>> db72e3e... Adds existing efforts to auto register a runner
     post_install                            = "${var.userdata_post_install}"
     runners_gitlab_url                      = "${var.runners_gitlab_url}"
     runners_token                           = "${var.runners_token}"
@@ -158,7 +146,7 @@ data "template_file" "runners" {
     runners_limit                     = "${var.runners_limit}"
     runners_concurrent                = "${var.runners_concurrent}"
     runners_image                     = "${var.runners_image}"
-    runners_privileged                 = "${var.runners_privileged}"
+    runners_privileged                = "${var.runners_privileged}"
     runners_idle_count                = "${var.runners_idle_count}"
     runners_idle_time                 = "${var.runners_idle_time}"
     runners_off_peak_timezone         = "${var.runners_off_peak_timezone}"
@@ -223,7 +211,6 @@ data "aws_ami" "runner" {
 resource "aws_launch_configuration" "gitlab_runner_instance" {
   security_groups = ["${aws_security_group.runner.id}"]
 
-  # key_name             = "${aws_key_pair.key.key_name}"
   key_name             = "${var.ssh_key_name}"
   image_id             = "${data.aws_ami.runner.id}"
   user_data            = "${data.template_file.user_data.rendered}"

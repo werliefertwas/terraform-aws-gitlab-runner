@@ -10,22 +10,22 @@ variable "aws_zone" {
 }
 
 variable "environment" {
-  description = "A name that identifies the environment, will used as prefix and for tagging."
+  description = "A name that identifies the environment, used as prefix and for tagging."
   type        = "string"
 }
 
 variable "vpc_id" {
-  description = "The VPC that is used for the instances."
+  description = "The target VPC for the docker-machine and runner instances."
   type        = "string"
 }
 
 variable "subnet_id_runners" {
-  description = "Subnet used to hosts the docker-machine runners."
+  description = "Subnet used to host the docker-machine gitlab-runners."
   type        = "string"
 }
 
 variable "subnet_ids_gitlab_runner" {
-  description = "Subnet used for hosting the gitlab-runner."
+  description = "List of subnets used for hosting the gitlab-runners."
   type        = "list"
 }
 
@@ -62,7 +62,7 @@ variable "runners_executor" {
 }
 
 variable "runners_gitlab_url" {
-  description = "URL of the gitlab instance to connect to."
+  description = "URL of the Gitlab instance to connect to."
   type        = "string"
 }
 
@@ -136,7 +136,8 @@ variable "runners_root_size" {
 }
 
 variable "create_runners_iam_instance_profile" {
-  default = true
+  description = "Boolean to control the creation of the runners IAM instance profile"
+  default     = true
 }
 
 variable "runners_iam_instance_profile_name" {
@@ -169,7 +170,7 @@ variable "runners_request_concurrency" {
 }
 
 variable "runners_output_limit" {
-  description = "Set maximum build log size in kilobytes, by default set to 4096 (4MB)"
+  description = "Sets the maximum build log size in kilobytes, by default set to 4096 (4MB)"
   default     = "4096"
 }
 
@@ -186,12 +187,12 @@ variable "userdata_post_install" {
 }
 
 variable "runners_use_private_address" {
-  description = "Restrict runners to use only private address"
+  description = "Restrict runners to the use of a private IP address"
   default     = "true"
 }
 
 variable "docker_machine_user" {
-  description = "User name for the user to create spot instances to host docker-machine."
+  description = "Username of the user used to create the spot instances that host docker-machine."
   type        = "string"
   default     = "docker-machine"
 }
@@ -214,47 +215,47 @@ variable "cache_shared" {
 }
 
 variable "gitlab_runner_version" {
-  description = "Version for the gitlab runner."
+  description = "Version of the Gitlab runner."
   type        = "string"
   default     = "11.8.0"
 }
 
 variable "enable_cloudwatch_logging" {
-  description = "Enable or disable the CloudWatch logging."
-  default     = 1
+  description = "Boolean used to enable or disable the CloudWatch logging."
+  default     = true
 }
 
 variable "tags" {
   type        = "map"
-  description = "Map of tags that will be added to created resources. By default resources will be taggen with name and environemnt."
+  description = "Map of tags that will be added to module created resources. By default resources will be tagged with 'name' and 'environemnt'."
   default     = {}
 }
 
 variable "allow_iam_service_linked_role_creation" {
-  description = "Attach policy to runner instance to create service linked roles."
+  description = "Boolean used to control attaching the policy to a runner instance to create service linked roles."
   default     = true
 }
 
 variable "docker_machine_options" {
-  description = "Additional to set options for docker machine. Each element of the list should be key and value. E.g. '[\"amazonec2-zone=a\"]'"
+  description = "List of additional options for the docker machine config. Each element of this list must be a key=value pair. E.g. '[\"amazonec2-zone=a\"]'"
   type        = "list"
   default     = []
 }
 
 variable "instance_role_json" {
-  description = "Instance role json for the runner agent ec2 instance to override the default."
+  description = "Runner agent instance override policy, expected to be in JSON format. "
   type        = "string"
   default     = ""
 }
 
 variable "instance_role_runner_json" {
-  description = "Instance role json for the docker machine runners to override the default."
+  description = "Docker machine runner instance override policy, expected to be in JSON format."
   type        = "string"
   default     = ""
 }
 
 variable "ami_filter" {
-  description = "AMI filter to select the AMI used to host the gitlab runner agent. By default the pattern `amzn-ami-hvm-2018.03*-x86_64-ebs` is used for the name. Currently Amazon Linux 2 `amzn2-ami-hvm-2.0.????????-x86_64-ebs` looks *not* working for this configuration."
+  description = "List of maps used to create the AMI filter for the Gitlab runner agent AMI. Currently Amazon Linux 2 `amzn2-ami-hvm-2.0.????????-x86_64-ebs` looks to *not* be working for this configuration."
   type        = "list"
 
   default = [{
@@ -264,7 +265,7 @@ variable "ami_filter" {
 }
 
 variable "ami_owners" {
-  description = "A list of owners used to select the AMI for the instance."
+  description = "The list of owners used to select the AMI of Gitlab runner agent instances."
   type        = "list"
   default     = ["amazon"]
 }
@@ -283,6 +284,11 @@ variable "gitlab_runner_registration_config" {
   }
 }
 
+variable "allow_all_inbound" {
+  description = "Boolean used to enable all inbound traffic"
+  default     = false
+}
+
 variable "secure_parameter_store_runner_token_key" {
   type        = "string"
   description = "The key name used store the Gitlab runner token in Secure Paramater Store"
@@ -290,7 +296,7 @@ variable "secure_parameter_store_runner_token_key" {
 }
 
 variable "gitlab_runner_registration_config" {
-  description = "Configurtion to register the runner. See the README for an example, or the examples."
+  description = "Configuration used to register the runner. See the README for an example, or reference the examples in the examples directory of this repo."
   type        = "map"
 
   default = {
@@ -310,6 +316,6 @@ variable "secure_parameter_store_runner_token_key" {
 }
 
 variable "allow_ssh_to_runner_instance_sg" {
-  type = "string"
+  type        = "string"
   description = "Security group to attach to the runner instance ssh sg to allow remote access."
 }
