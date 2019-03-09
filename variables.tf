@@ -99,7 +99,7 @@ variable "runners_image" {
 }
 
 variable "runners_privileged" {
-  description = "Runners will run in privilled mode, will be used in the runner config.toml"
+  description = "Runners will run in privileged mode, will be used in the runner config.toml"
   type        = "string"
   default     = "true"
 }
@@ -131,7 +131,7 @@ variable "runners_off_peak_periods" {
 }
 
 variable "runners_root_size" {
-  description = "Runnner instance root size in GB."
+  description = "Runner instance root size in GB."
   default     = 16
 }
 
@@ -271,7 +271,7 @@ variable "ami_owners" {
 }
 
 variable "gitlab_runner_registration_config" {
-  description = "Configurtion to register the runner. See the README for an example, or the examples."
+  description = "Configuration to register the runner. See the README for an example, or the examples."
   type        = "map"
 
   default = {
@@ -291,7 +291,7 @@ variable "allow_all_inbound" {
 
 variable "secure_parameter_store_runner_token_key" {
   type        = "string"
-  description = "The key name used store the Gitlab runner token in Secure Paramater Store"
+  description = "The key name used store the Gitlab runner token in Secure Parameter Store"
   default     = "runner-token"
 }
 
@@ -311,7 +311,7 @@ variable "gitlab_runner_registration_config" {
 
 variable "secure_parameter_store_runner_token_key" {
   type        = "string"
-  description = "The key name used store the Gitlab runner token in Secure Paramater Store"
+  description = "The key name used store the Gitlab runner token in Secure Parameter Store"
   default     = "runner-token"
 }
 
