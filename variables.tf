@@ -270,20 +270,6 @@ variable "ami_owners" {
   default     = ["amazon"]
 }
 
-variable "gitlab_runner_registration_config" {
-  description = "Configuration to register the runner. See the README for an example, or the examples."
-  type        = "map"
-
-  default = {
-    registration_token = ""
-    tag_list           = ""
-    description        = ""
-    locked_to_project  = "true"
-    run_untagged       = "false"
-    maximum_timeout    = "3600"
-  }
-}
-
 variable "allow_all_inbound" {
   description = "Boolean used to enable all inbound traffic"
   default     = false
@@ -309,13 +295,19 @@ variable "gitlab_runner_registration_config" {
   }
 }
 
-variable "secure_parameter_store_runner_token_key" {
-  type        = "string"
-  description = "The key name used store the Gitlab runner token in Secure Parameter Store"
-  default     = "runner-token"
-}
-
 variable "allow_ssh_to_runner_instance_sg" {
   type        = "string"
   description = "Security group to attach to the runner instance ssh sg to allow remote access."
+  default     = ""
+}
+
+variable "ssh_key_name" {
+  type        = "string"
+  description = "Name of the SSH key to associate with the instances."
+}
+
+variable "specified_cidr_blocks" {
+  type        = "list"
+  description = "List of additional subnets in CDIR notation to allow inbound ssh access to the gitlab-runner host."
+  default     = []
 }
