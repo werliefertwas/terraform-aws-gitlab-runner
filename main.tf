@@ -119,9 +119,15 @@ data "template_file" "gitlab_runner" {
 }
 
 locals {
-  // Convert list to a string seperated and prepend by a comma
+  // Convert list to a string separated and prepended by a comma
   docker_machine_options_string   = "${format(",%s", join(",", formatlist("%q", var.docker_machine_options)))}"
   runners_off_peak_periods_string = "${var.runners_off_peak_periods == "" ? "" : format("OffPeakPeriods = %s", var.runners_off_peak_periods)}"
+}
+
+# validate that the specified runner subnet is in the target AZ
+data "aws_subnet" "runners" {
+  id                = "${var.subnet_id_runners}"
+  availability_zone = "${var.aws_region}${var.aws_zone}"
 }
 
 data "template_file" "runners" {
@@ -133,7 +139,7 @@ data "template_file" "runners" {
     environment = "${var.environment}"
 
     runners_vpc_id              = "${var.vpc_id}"
-    runners_subnet_id           = "${var.subnet_id_runners}"
+    runners_subnet_id           = "${data.aws_subnet.runners.id}"
     runners_aws_zone            = "${var.aws_zone}"
     runners_instance_type       = "${var.docker_machine_instance_type}"
     runners_spot_price_bid      = "${var.docker_machine_spot_price_bid}"
