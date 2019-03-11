@@ -136,7 +136,7 @@ module "gitlab-runner" {
 |------|-------------|:----:|:-----:|:-----:|
 | allow\_all\_inbound | Boolean used to enable all inbound traffic | string | `"false"` | no |
 | allow\_iam\_service\_linked\_role\_creation | Boolean used to control attaching the policy to a runner instance to create service linked roles. | string | `"true"` | no |
-| allow\_ssh\_to\_runner\_instance\_sg | Security group to attach to the runner instance ssh sg to allow remote access. | string | n/a | yes |
+| allow\_ssh\_to\_runner\_instance\_sg | Security group to attach to the runner instance ssh sg to allow remote access. | string | `""` | no |
 | ami\_filter | List of maps used to create the AMI filter for the Gitlab runner agent AMI. Currently Amazon Linux 2 `amzn2-ami-hvm-2.0.????????-x86_64-ebs` looks to *not* be working for this configuration. | list | `<list>` | no |
 | ami\_owners | The list of owners used to select the AMI of Gitlab runner agent instances. | list | `<list>` | no |
 | aws\_region | AWS region. | string | n/a | yes |
@@ -153,7 +153,6 @@ module "gitlab-runner" {
 | enable\_cloudwatch\_logging | Boolean used to enable or disable the CloudWatch logging. | string | `"true"` | no |
 | environment | A name that identifies the environment, used as prefix and for tagging. | string | n/a | yes |
 | gitlab\_runner\_registration\_config | Configuration used to register the runner. See the README for an example, or reference the examples in the examples directory of this repo. | map | `<map>` | no |
-| gitlab\_runner\_registration\_config | Configuration to register the runner. See the README for an example, or the examples. | map | `<map>` | no |
 | gitlab\_runner\_version | Version of the Gitlab runner. | string | `"11.8.0"` | no |
 | instance\_role\_json | Runner agent instance override policy, expected to be in JSON format. | string | `""` | no |
 | instance\_role\_runner\_json | Docker machine runner instance override policy, expected to be in JSON format. | string | `""` | no |
@@ -182,10 +181,11 @@ module "gitlab-runner" {
 | runners\_token | Token for the runner, will be used in the runner config.toml | string | `"__REPLACED_BY_USER_DATA__"` | no |
 | runners\_use\_private\_address | Restrict runners to the use of a private IP address | string | `"true"` | no |
 | secure\_parameter\_store\_runner\_token\_key | The key name used store the Gitlab runner token in Secure Parameter Store | string | `"runner-token"` | no |
-| secure\_parameter\_store\_runner\_token\_key | The key name used store the Gitlab runner token in Secure Parameter Store | string | `"runner-token"` | no |
+| specified\_cidr\_blocks | List of additional subnets in CDIR notation to allow inbound ssh access to the gitlab-runner host. | list | `<list>` | no |
+| ssh\_key\_name | Name of the SSH key to associate with the instances. | string | `""` | no |
 | subnet\_id\_runners | Subnet used to host the docker-machine gitlab-runners. | string | n/a | yes |
 | subnet\_ids\_gitlab\_runner | List of subnets used for hosting the gitlab-runners. | list | n/a | yes |
-| tags | Map of tags that will be added to module created resources. By default resources will be tagged with 'name' and 'environment'. | map | `<map>` | no |
+| tags | Map of tags that will be added to module created resources. By default resources will be tagged with 'name' and 'environemnt'. | map | `<map>` | no |
 | userdata\_post\_install | User-data script snippet to insert after gitlab-runner install | string | `""` | no |
 | userdata\_pre\_install | User-data script snippet to insert before gitlab-runner install | string | `""` | no |
 | vpc\_id | The target VPC for the docker-machine and runner instances. | string | n/a | yes |
@@ -195,6 +195,7 @@ module "gitlab-runner" {
 | Name | Description |
 |------|-------------|
 | runner\_agent\_role | ARN of the rule used for the ec2 instance for the GitLab runner agent. |
+| runner\_as\_group\_name | Name of the autoscaling group for the gitlab-runner instance |
 | runner\_cache\_bucket\_arn | ARN of the S3 for the build cache. |
 
 ## Example
