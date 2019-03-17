@@ -314,5 +314,5 @@ variable "specified_cidr_blocks" {
 }
 
 variable "cidr_blocks_allowed_inbound" {
-  type        = "list"
+  type = "list"
 }
