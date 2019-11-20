@@ -229,6 +229,7 @@ data "template_file" "runners" {
     runners_services_volumes_tmpfs    = chomp(join("", data.template_file.services_volumes_tmpfs.*.rendered))
     bucket_name                       = local.bucket_name
     shared_cache                      = var.cache_shared
+    sentry_dsn                        = var.sentry_dsn
   }
 }
 

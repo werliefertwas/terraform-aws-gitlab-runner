@@ -255,6 +255,12 @@ variable "runners_request_spot_instance" {
   default     = true
 }
 
+variable "sentry_dsn" {
+  description = "Sentry DSN for system level error tracking of runners"
+  type        = string
+  default     = ""
+}
+
 variable "cache_bucket_prefix" {
   description = "Prefix for s3 cache bucket name."
   type        = string
