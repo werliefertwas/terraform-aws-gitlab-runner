@@ -9,6 +9,12 @@ variable "cache_bucket_prefix" {
   default     = ""
 }
 
+variable "cache_bucket_set_random_suffix" {
+  description = "Random string suffix for s3 cache bucket"
+  type        = bool
+  default     = false
+}
+
 variable "cache_bucket_name_include_account_id" {
   description = "Boolean to add current account ID to cache bucket name."
   type        = bool
@@ -37,4 +43,22 @@ variable "create_cache_bucket" {
   description = "This module is by default included in the runner module. To disable the creation of the bucket this parameter can be disabled."
   type        = bool
   default     = true
+}
+
+variable "cache_lifecycle_clear" {
+  description = "Enable the rule to cleanup the cache for expired objects."
+  type        = bool
+  default     = true
+}
+
+variable "cache_lifecycle_prefix" {
+  description = "Object key prefix identifying one or more objects to which the clean up rule applies."
+  type        = string
+  default     = "runner/"
+}
+
+variable "arn_format" {
+  type        = string
+  default     = "arn:aws"
+  description = "ARN format to be used. May be changed to support deployment in GovCloud/China regions."
 }
